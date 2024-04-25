@@ -12,10 +12,13 @@
 // input of the user. 
 //================================================================
 
+
 #include "SparseGraph.h"
 #include <stdexcept>
 #include <limits>
-#include <queue>
+
+
+
 //===========================================
 // Default constructor
 // this method creates and initialize a SparseGraph object with default parameters. 
@@ -193,4 +196,49 @@ void SparseGraph::DFS_Visit(int v, int &clock) {
     clock++;
     table["f"][v] = clock;
     table["color"][v] = 2;
+}
+
+SparseGraph* SparseGraph::MST_Prim() {
+    SparseGraph* mst_graph = new SparseGraph(vert_count, edge_count);
+
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
+
+    std::set<int> inset;
+    std::set<int> outset;
+
+    inset.insert(0);
+    for (int i = 1; i < vert_count; ++i)
+        outset.insert(i);
+
+    for (const auto& edge : adj_list[0])
+        pq.push(std::make_tuple(0, edge.first, edge.second));
+
+    while (!outset.empty() && !pq.empty()) {
+        auto uvw = pq.top();
+        pq.pop();
+
+        int u = std::get<0>(uvw);
+        int v = std::get<1>(uvw);
+        int w = std::get<2>(uvw);
+
+        if ((inset.count(u) && outset.count(v)) || (inset.count(v) && outset.count(u))) {
+            mst_graph->mst_edges.insert(uvw);
+
+            // Add the new vertex to inset and remove from outset
+            int new_vertex = outset.count(v) ? v : u;   
+            inset.insert(new_vertex);
+            outset.erase(new_vertex);
+
+            // Push all adjacent edges of the newly added vertex to the priority queue
+            for (const auto& edge : adj_list[new_vertex]) {
+                if (outset.count(edge.first))
+                    pq.push(std::make_tuple(new_vertex, edge.first, edge.second));
+            }
+        }
+    }
+
+    for (const auto& edge : mst_graph->mst_edges)
+        std::cout << std::get<0>(edge) << " " << std::get<1>(edge) << " " << std::get<2>(edge) << std::endl;
+
+    return mst_graph;
 }

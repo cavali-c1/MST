@@ -9,6 +9,8 @@
 
 #include "Graph.h"
 #include <list>
+#include<tuple>
+#include <set>
 
 #ifndef SPARSEGRAPH_H
 #define SPARSEGRAPH_H
@@ -36,6 +38,9 @@ class SparseGraph : public Graph {
         //DFS-based Algorithms
         void DFS(void) override;
         void DFS_Visit(int v, int &clock) override;
+
+        // project 7 algorithms 
+        SparseGraph*     MST_Prim (void) override;
 };
 
 #endif

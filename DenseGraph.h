@@ -8,6 +8,8 @@
 //================================================================
 
 #include "Graph.h"
+#include<tuple>
+#include <set>
 
 #ifndef DENSEGRAPH_H
 #define DENSEGRAPH_H
@@ -32,6 +34,9 @@ class DenseGraph : public Graph {
         //DFS-based Algorithms
         void DFS(void) override; // depth first search
         void DFS_Visit(int v, int &clock) override; // depth first search visi (helper function for DFS)
+        
+        // project 7 algorithms 
+        Graph*     MST_Prim (void) override;
 };
 
 #endif

@@ -8,7 +8,7 @@
 //================================================================
 
 #include "Graph.h"
-#include "DenseGraph.h"       // remove this for B-level
+//#include "DenseGraph.h"       // remove this for B-level
 #include "SparseGraph.h"      // remove this for B-level
 #include <iostream>
 using namespace std;
@@ -36,19 +36,19 @@ int main ( void )
    mstp = gp->MST_Prim();
    cout << "MST (Prim) is: \n";
    cout << (*mstp) << endl;
-   cout << "MST mass = " << mstp->mass() << endl;
+   //cout << "MST mass = " << mstp->mass() << endl;
 
    // for A-level on Project 7
    // comment this out if you only implement Prim
-   cout << endl << endl;
-   mstk = gp->MST_Kruskal();
-   cout << "MST (Kruskal) is: \n";
-   cout << (*mstk) << endl;
-   cout << "MST mass = " << mstk->mass() << endl;
+   //cout << endl << endl;
+   //mstk = gp->MST_Kruskal();
+   //cout << "MST (Kruskal) is: \n";
+   //cout << (*mstk) << endl;
+   //cout << "MST mass = " << mstk->mass() << endl;
 
    // remove graphs
    delete gp;
    delete mstp;
-   delete mstk;      // comment out if not used
+   //delete mstk;      // comment out if not used
    return 0;
 }
