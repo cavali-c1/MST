@@ -35,8 +35,8 @@ class DenseGraph : public Graph {
         void DFS(void) override; // depth first search
         void DFS_Visit(int v, int &clock) override; // depth first search visi (helper function for DFS)
         
-        // project 7 algorithms 
-        Graph*     MST_Prim (void) override;
+       // project 7 algorithms 
+        DenseGraph*     MST_Prim (void) override;
 };
 
 #endif

@@ -192,3 +192,47 @@ void DenseGraph::DFS_Visit(int v, int &clock) {
     table["f"][v] = clock;
     table["color"][v] = 2;
 }
+
+DenseGraph* DenseGraph::MST_Prim(){
+
+    DenseGraph* mst_graph = new DenseGraph(vert_count, edge_count);
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
+
+    std::set<int> inset;
+    std::set<int> outset;
+
+    inset.insert(0);
+    for (int i = 1; i < vert_count; ++i)
+        outset.insert(i);
+
+    for (int i = 1; i < vert_count; ++i) {
+        if (matrix[0][i] >= 0) 
+            pq.push(std::make_tuple(0, i, matrix[0][i]));
+    }
+
+    while (!outset.empty() && !pq.empty()) {
+        auto uvw = pq.top();
+        pq.pop();
+
+        int u = std::get<int>(uvw);
+        int v = std::get<int>(uvw);
+        int w = std::get<int>(uvw);
+
+        if ((inset.count(u) && outset.count(v)) || (inset.count(v) && outset.count(u))) {
+            mst_graph->insertEdge(u, v, w);
+            mst_graph->insertEdge(v, u, w); 
+
+           
+            int new_vertex = outset.count(v) ? v : u;   
+            inset.insert(new_vertex);
+            outset.erase(new_vertex);
+            
+            for (int i = 0; i < vert_count; ++i) {
+                if (outset.count(i) && matrix[new_vertex][i] >= 0)
+                    pq.push(std::make_tuple(new_vertex, i, matrix[new_vertex][i]));
+            }
+        }
+    }
+
+    return mst_graph;
+}
