@@ -39,12 +39,9 @@ std::istream& operator>>(std::istream &is, Graph &gp) {
 //===========================================
 std::ostream& operator<<(std::ostream &os, const Graph &gp) {
     os << "G= (" << gp.vert_count << ", " << gp.edge_count << ") "<< std::endl;
-    for (int i=0; i < gp.vert_count; ++i){
-        for(int j=0; j < gp.vert_count; ++j){
-            if (gp.isEdge(i, j))
-            os << i << " " << j << " "<< gp.getWeight(i,j) << std::endl;
-        }
-    }
+    for (const auto& e : gp.edges)
+        os << std::get<0>(e) << " " << std::get<1>(e) << " "<< std::get<2>(e) << std::endl;
+
     return os;
 }
 //===========================================
@@ -242,4 +239,13 @@ void Graph::classifyDFSEdges(void) {
         if (table["f"][edge.second] < table["disc"][edge.first] or table["disc"][edge.second] > table["f"][edge.first])
             std::cout << "cross edge" << std::endl;
     }
+}
+
+int Graph::mass(void) {
+    int total = 0;
+
+    for (const auto& edge : edges) 
+        total += std::get<2>(edge);
+
+    return total;
 }

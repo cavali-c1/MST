@@ -40,7 +40,8 @@ class SparseGraph : public Graph {
         void DFS_Visit(int v, int &clock) override;
 
         // project 7 algorithms 
-        SparseGraph*     MST_Prim (void) override;
+        SparseGraph*    MST_Prim (void) override;
+        SparseGraph*    MST_Kruskal (void) override;
 };
 
 #endif

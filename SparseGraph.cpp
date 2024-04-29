@@ -111,9 +111,11 @@ void SparseGraph::insertEdge(const int v1, const int v2, int w) {
         throw std::invalid_argument("insertEdge - Invalid Weight");
 
     adj_list[v1].emplace_back(v2, w);
+    edges.insert(std::make_tuple(v1, v2, w));
 
     #ifndef DIRECTED_GRAPH
     adj_list[v2].emplace_back(v1, w);
+    edges.insert(std::make_tuple(v2, v1, w));
     #endif
 }
 //===========================================
@@ -198,8 +200,8 @@ void SparseGraph::DFS_Visit(int v, int &clock) {
     table["color"][v] = 2;
 }
 
-SparseGraph* SparseGraph::MST_Prim() {
-    SparseGraph* mst_graph = new SparseGraph(vert_count, edge_count);
+SparseGraph* SparseGraph::MST_Prim(void) {
+    SparseGraph* mst_graph = new SparseGraph(vert_count, 0);
 
     std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
 
@@ -222,14 +224,13 @@ SparseGraph* SparseGraph::MST_Prim() {
         int w = std::get<2>(uvw);
 
         if ((inset.count(u) && outset.count(v)) || (inset.count(v) && outset.count(u))) {
-            mst_graph->mst_edges.insert(uvw);
+            mst_graph->edges.insert(uvw);
+            mst_graph->edge_count++;
 
-            // Add the new vertex to inset and remove from outset
             int new_vertex = outset.count(v) ? v : u;   
             inset.insert(new_vertex);
             outset.erase(new_vertex);
 
-            // Push all adjacent edges of the newly added vertex to the priority queue
             for (const auto& edge : adj_list[new_vertex]) {
                 if (outset.count(edge.first))
                     pq.push(std::make_tuple(new_vertex, edge.first, edge.second));
@@ -237,8 +238,35 @@ SparseGraph* SparseGraph::MST_Prim() {
         }
     }
 
-    for (const auto& edge : mst_graph->mst_edges)
-        std::cout << std::get<0>(edge) << " " << std::get<1>(edge) << " " << std::get<2>(edge) << std::endl;
+    return mst_graph;
+}
 
+SparseGraph* SparseGraph::MST_Kruskal(void) {
+    SparseGraph* mst_graph = new SparseGraph(vert_count, 0);
+
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
+
+    for (int i = 0; i < vert_count; ++i) {
+        for (const auto& edge : adj_list[i])
+            pq.push(std::make_tuple(i, edge.first, edge.second));
+    }
+    DSU S(vert_count);
+    int count = 1;
+
+    while (!pq.empty() && count < vert_count) {
+        auto uvw = pq.top();
+        pq.pop();
+
+        int u = std::get<0>(uvw);
+        int v = std::get<1>(uvw);
+        int w = std::get<2>(uvw);
+
+        if (S.find_(u) != S.find_(v)) {
+            mst_graph->edges.insert(uvw);
+            mst_graph->edge_count++;
+            S.union_(u, v);
+            ++count;
+        }
+    }
     return mst_graph;
 }

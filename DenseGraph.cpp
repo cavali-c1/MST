@@ -100,9 +100,11 @@ void DenseGraph::insertEdge(const int v1, const int v2, int w) {
 
     if (matrix[v1][v2] == -1) {
         matrix[v1][v2] = w;
+        edges.insert(std::make_tuple(v1, v2, w));
 
         #ifndef DIRECTED_GRAPH
         matrix[v2][v1] = w;
+        edges.insert(std::make_tuple(v2, v1, w));
         #endif
     }
 }
@@ -193,9 +195,9 @@ void DenseGraph::DFS_Visit(int v, int &clock) {
     table["color"][v] = 2;
 }
 
-DenseGraph* DenseGraph::MST_Prim(){
+DenseGraph* DenseGraph::MST_Prim() {
+    DenseGraph* mst_graph = new DenseGraph(vert_count, 0);
 
-    DenseGraph* mst_graph = new DenseGraph(vert_count, edge_count);
     std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
 
     std::set<int> inset;
@@ -206,7 +208,7 @@ DenseGraph* DenseGraph::MST_Prim(){
         outset.insert(i);
 
     for (int i = 1; i < vert_count; ++i) {
-        if (matrix[0][i] >= 0) 
+        if (isEdge(0, i)) 
             pq.push(std::make_tuple(0, i, matrix[0][i]));
     }
 
@@ -214,14 +216,13 @@ DenseGraph* DenseGraph::MST_Prim(){
         auto uvw = pq.top();
         pq.pop();
 
-        int u = std::get<int>(uvw);
-        int v = std::get<int>(uvw);
-        int w = std::get<int>(uvw);
+        int u = std::get<0>(uvw);
+        int v = std::get<1>(uvw);
+        int w = std::get<2>(uvw);
 
         if ((inset.count(u) && outset.count(v)) || (inset.count(v) && outset.count(u))) {
-            mst_graph->insertEdge(u, v, w);
-            mst_graph->insertEdge(v, u, w); 
-
+            mst_graph->edges.insert(uvw);
+            mst_graph->edge_count++;
            
             int new_vertex = outset.count(v) ? v : u;   
             inset.insert(new_vertex);
@@ -233,6 +234,37 @@ DenseGraph* DenseGraph::MST_Prim(){
             }
         }
     }
+    return mst_graph;
+}
 
+DenseGraph* DenseGraph::MST_Kruskal(void) {
+    DenseGraph* mst_graph = new DenseGraph(vert_count, 0);
+
+    std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, sortbythird> pq;
+
+    for (int i = 0; i < vert_count; ++i) {
+        for (int j = 0; j < vert_count; ++j) {
+            if (isEdge(i, j))
+                pq.push(std::make_tuple(i, j, matrix[i][j]));
+        }
+    }
+    DSU S(vert_count);
+    int count = 1;
+
+    while (!pq.empty() && count < vert_count) {
+        auto uvw = pq.top();
+        pq.pop();
+
+        int u = std::get<0>(uvw);
+        int v = std::get<1>(uvw);
+        int w = std::get<2>(uvw);
+
+        if (S.find_(u) != S.find_(v)) {
+            mst_graph->edges.insert(uvw);
+            mst_graph->edge_count++;
+            S.union_(u, v);
+            ++count;
+        }
+    }
     return mst_graph;
 }
