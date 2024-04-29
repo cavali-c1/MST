@@ -36,14 +36,11 @@ void DSU::union_(int a, int b) {
     if (a < 0 || a >= (int)arr.size() || b < 0 || b >= (int)arr.size())
         throw std::invalid_argument("DSU union - Invalid Index");
 
-    int a_idx = find_(a);
-    int b_idx = find_(b);
+    std::shared_ptr<Node> root_a = arr[find_(a)];
+    std::shared_ptr<Node> root_b = arr[find_(b)];
 
-    if (a_idx == b_idx)
+    if (root_a == root_b)
         return;
-
-    std::shared_ptr<Node> root_a = arr[a_idx];
-    std::shared_ptr<Node> root_b = arr[b_idx];
 
     if (root_a->node_head->size < root_b->node_head->size)
         std::swap(root_a, root_b);

@@ -5,29 +5,26 @@
 #include <memory>
 #include <iostream>
 
-struct Node;
-struct Set;
-
-struct Set {
-    std::shared_ptr<Node> set_head;
-    std::weak_ptr<Node> set_tail;
-    int size;
-    
-    Set(void) : size(1) {}
-    ~Set(void) {}
-};
-
-struct Node : std::enable_shared_from_this<Node> {
-    std::shared_ptr<Set> node_head; //ptr to Set for ownership
-    std::weak_ptr<Node> node_tail;
-    int idx;
-
-    Node(int i) : idx(i) {}
-    ~Node(void) {}
-};
-
 class DSU {
     private:
+        struct Node;
+
+        struct Set {
+            std::shared_ptr<Node> set_head;
+            std::weak_ptr<Node> set_tail;
+            int size;
+            
+            Set(void) : size(1) {}
+            ~Set(void) {}
+        };
+        struct Node {
+            std::shared_ptr<Set> node_head; //ptr to Set for ownership
+            std::weak_ptr<Node> node_tail;
+            int idx;
+
+            Node(int i) : idx(i) {}
+            ~Node(void) {}
+        };
         std::vector<std::shared_ptr<Node>> arr;
     public:
         DSU(int n);
